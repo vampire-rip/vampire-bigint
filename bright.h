@@ -32,8 +32,8 @@ public:
     BigInt();
     BigInt(const long long& v);
     BigInt(const vector_t& v);
-    BigInt(const string &s, int base = 10);
-    BigInt(const char* &s, int base = 10);
+    BigInt(const string &s, int _base = 10);
+    BigInt(const char* &s, int _base = 10);
 
     BigInt& operator=(const BigInt &b);
     BigInt& operator=(long long num);
@@ -45,8 +45,8 @@ public:
     BigInt operator/(int b) const;
     BigInt operator/(const BigInt &b) const;
     BigInt operator%(const BigInt &b) const;
-    BigInt operator<<(const size_t &b) const;
-    BigInt operator>>(const size_t &b) const;
+    BigInt operator<<(const unsigned int &b) const;
+    BigInt operator>>(const unsigned int &b) const;
 
     BigInt& operator+=(const BigInt &b);
     BigInt& operator-=(const BigInt &b);
@@ -55,8 +55,8 @@ public:
     BigInt& operator/=(int b);
     BigInt& operator/=(const BigInt &b);
     BigInt& operator%=(const BigInt &b);
-    BigInt& operator<<=(const size_t &b);
-    BigInt& operator>>=(const size_t &b);
+    BigInt& operator<<=(const unsigned int &b);
+    BigInt& operator>>=(const unsigned int &b);
 
     unsigned int shift();
     BigInt& unshift(unsigned int b);
@@ -75,8 +75,8 @@ public:
     size_t size() const;
     size_t vector_size() const;
 
-    static BigInt fromStr(const string &s, int base);
-    string toStr(int base) const;
+    static BigInt fromStr(const string &s, int _base);
+    string toStr(int _base) const;
 
 private:
     BigInt& trim();
@@ -87,7 +87,7 @@ private:
     static char _base16ToChar(unsigned short t);
     static char _base8ToChar(unsigned short t);
 
-// friends:
+    // friends:
     friend std::pair<BigInt, BigInt> divmod(const BigInt &a1, const BigInt &b1);
     friend ostream &operator<<(ostream &os, const BigInt &b);
     friend istream &operator>>(istream &is, BigInt &b);

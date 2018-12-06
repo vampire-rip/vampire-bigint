@@ -7,23 +7,23 @@ BigInt::BigInt() : sign(1) {
 
 }
 
-BigInt::BigInt(const long long &v) {
+BigInt::BigInt(const long long &v) : sign(1) {
     *this = v;
 }
 
-BigInt::BigInt(const BigInt::vector_t &v)
+BigInt::BigInt(const BigInt::vector_t &v) : sign(1)
 {
     this->v = v;
 }
 
-BigInt::BigInt(const string &s, int base)
+BigInt::BigInt(const string &s, int _base) : sign(1)
 {
-    *this = fromStr(s, base);
+    *this = fromStr(s, _base);
 }
 
-BigInt::BigInt(const char *&s, int base)
+BigInt::BigInt(const char *&s, int _base) : sign(1)
 {
-    *this = fromStr(s, base);
+    *this = fromStr(s, _base);
 }
 
 BigInt& BigInt::operator=(const BigInt &b)
@@ -35,6 +35,7 @@ BigInt& BigInt::operator=(const BigInt &b)
 
 BigInt& BigInt::operator=(long long num) {
     this->sign = 1;
+    this->v.clear();
     if (num < 0) {
         this->sign = -1;
         num = -num;
@@ -50,7 +51,8 @@ BigInt BigInt::operator+(const BigInt &b) const
         return *this - (-b);
     BigInt res = b;
     size_t q = std::max(vector_size(), b.vector_size());
-    for (unsigned int i = 0, carry = 0; i < q || carry; ++i) {
+    unsigned int carry = 0;
+    for (unsigned int i = 0; i < q || carry; ++i) {
         if (i == res.vector_size()) res.v.push_back(0);
         res.v[i] += carry + (i < vector_size() ? v[i] : 0);
         carry = res.v[i] >= base;
@@ -65,12 +67,14 @@ BigInt BigInt::operator-(const BigInt &b) const
         return *this + (-b);
     if (abs() >= b.abs()) {
         BigInt res = *this;
-        for (unsigned int i = 0, carry = 0; i < b.vector_size() || carry; ++i) {
+        unsigned int carry = 0;
+        for (size_t i = 0; i < b.vector_size() || carry; ++i) {
             unsigned int temp = carry + (i < b.vector_size() ? static_cast<unsigned int>(b.v[i]) : 0);
             if (res.v[i] >= temp) {
                 res.v[i] -= temp;
                 carry = 0;
-            } else {
+            }
+            else {
                 res.v[i] = res.v[i] - temp + base;
                 carry = 1;
             }
@@ -92,10 +96,11 @@ BigInt BigInt::operator*(int b) const
         res.v.insert(res.v.begin(), 0);
         return res;
     }
-    for (size_t i = 0, carry = 0; i < res.vector_size() || carry; ++i) {
+    unsigned long long carry = 0;
+    for (size_t i = 0; i < res.vector_size() || carry; ++i) {
         if (i == vector_size()) res.v.push_back(0);
         unsigned long long cur
-                = static_cast<unsigned long long>(b) * res.v[i] + carry;
+            = static_cast<unsigned long long>(b) * res.v[i] + carry;
         carry = cur / base;
         res.v[i] = cur % base;
     }
@@ -107,8 +112,8 @@ BigInt BigInt::operator*(const BigInt &b) const
 {
     // " << 1 " is of the same complexity as " << i "
     BigInt res(0);
-    for(size_t i = 0; i < b.vector_size(); i++){
-        res += [&]{
+    for (size_t i = 0; i < b.vector_size(); i++) {
+        res += [&] {
             BigInt t = *this * static_cast<int>(b.v[i]);
             t.sign = 1;
             t <<= i;
@@ -127,7 +132,8 @@ BigInt BigInt::operator/(int _b) const
         _b = -_b;
     }
     auto b = static_cast<unsigned int>(_b);
-    for (size_t i = v.size() - 1, rem = 0; i < v.size(); --i) {
+    long long rem = 0;
+    for (size_t i = v.size() - 1; i < v.size(); --i) {
         unsigned long long cur = v[i] + rem * base;
         res.v[i] = static_cast<unsigned int>(cur / b);
         rem = static_cast<unsigned int>(cur % b);
@@ -146,14 +152,14 @@ BigInt BigInt::operator%(const BigInt &b) const
     return divmod(*this, b).second;
 }
 
-BigInt BigInt::operator>>(const size_t &b) const
+BigInt BigInt::operator>>(const unsigned int &b) const
 {
     BigInt res = *this;
     res.v.erase(res.v.begin(), res.v.begin() + static_cast<long long>(b));
     return res;
 }
 
-BigInt BigInt::operator<<(const size_t &b) const
+BigInt BigInt::operator<<(const unsigned int &b) const
 {
     BigInt res = *this;
     vector_t t(b);
@@ -203,13 +209,13 @@ BigInt &BigInt::operator%=(const BigInt &b)
     return *this;
 }
 
-BigInt &BigInt::operator<<=(const size_t &b)
+BigInt &BigInt::operator<<=(const unsigned int &b)
 {
     *this = *this << b;
     return *this;
 }
 
-BigInt &BigInt::operator>>=(const size_t &b)
+BigInt &BigInt::operator>>=(const unsigned int &b)
 {
     *this = *this >> b;
     return *this;
@@ -236,14 +242,14 @@ bool BigInt::operator<(const BigInt &b) const
         return sign < b.sign;
     if (vector_size() != b.vector_size()) {
         return sign > 0
-                ? vector_size() < b.vector_size()
-                : vector_size() > b.vector_size();
+            ? vector_size() < b.vector_size()
+            : vector_size() > b.vector_size();
     }
     for (size_t i = vector_size() - 1; i < vector_size(); i--) {
         if (v[i] != b.v[i]) {
             return sign > 0
-                    ? v[i] < b.v[i]
-                    : v[i] > b.v[i];
+                ? v[i] < b.v[i]
+                : v[i] > b.v[i];
         }
     }
     return false;
@@ -303,7 +309,7 @@ BigInt &BigInt::trim()
 
 size_t BigInt::size() const
 {
-    if(v.empty()) return 0;
+    if (v.empty()) return 0;
     size_t b = 0;
     auto i = static_cast<unsigned int>(v.back());
     while (i != 0) {
@@ -318,7 +324,7 @@ inline size_t BigInt::vector_size() const
     return this->v.size();
 }
 
-BigInt BigInt::fromStr(const string &s, int base)
+BigInt BigInt::fromStr(const string &s, int _base)
 {
     BigInt res;
     size_t pos = 0;
@@ -327,16 +333,16 @@ BigInt BigInt::fromStr(const string &s, int base)
             res.sign = -res.sign;
         ++pos;
     }
-    if (base == 10) {
+    if (_base == 10) {
         res.v = _fromBase10Str(s.substr(pos));
         return res;
     }
-    if (base == 2) {
+    if (_base == 2) {
         res.v = _fromBase2Str(s.substr(pos));
         return res;
     }
     string temp;
-    if (base == 16) {
+    if (_base == 16) {
         for (; pos != s.size(); ++pos) {
             switch (s[pos]) {
             case '0': temp += "0000"; break;
@@ -358,7 +364,8 @@ BigInt BigInt::fromStr(const string &s, int base)
             default: temp += s[pos]; break;
             }
         }
-    } else if(base == 8) {
+    }
+    else if (_base == 8) {
         for (; pos != s.size(); ++pos) {
             switch (s[pos]) {
             case '0': temp += "000"; break;
@@ -379,9 +386,8 @@ BigInt BigInt::fromStr(const string &s, int base)
 
 string BigInt::toStr(int _base) const
 {
-
     if (vector_size() == 0) return "0";
-    string sign = this->sign == 1 ? "" : "-";
+    string _sign = this->sign == 1 ? "" : "-";
 
     if (_base == 10) {
         string res;
@@ -393,21 +399,21 @@ string BigInt::toStr(int _base) const
             res += '0' + static_cast<char>(t.second.shift());
         }
         std::reverse(res.begin(), res.end());
-        return sign + res;
+        return _sign + res;
     }
 
     string base2str;
 
     for (auto i = v.rbegin(); i != v.rend(); ++i) {
-         base2str += bitset<base2>(*i).to_string();
+        base2str += bitset<base2>(*i).to_string();
     }
 
-    size_t i = 0;
-    while (base2str[i] == '0') i++;
-    base2str.erase(0, i);
+    size_t _begin = 0;
+    while (base2str[_begin] == '0') _begin++;
+    base2str.erase(0, _begin);
 
     if (_base == 2)
-        return sign + base2str;
+        return _sign + base2str;
 
     string res;
     unsigned int b = 0;
@@ -420,32 +426,33 @@ string BigInt::toStr(int _base) const
             case '1': temp += 1 << b; break;
             }
             ++b;
-            if(b == 4) {
+            if (b == 4) {
                 res += _base16ToChar(temp);
                 temp = 0;
                 b = 0;
             }
         }
-        if(temp != 0)
+        if (temp != 0)
             res += _base16ToChar(temp);
-    } else if (_base == 8) {
+    }
+    else if (_base == 8) {
         for (auto i = base2str.rbegin(); i != base2str.rend(); ++i) {
             switch (*i) {
             case '0': break;
             case '1': temp += 1 << b; break;
             }
             ++b;
-            if(b == 3) {
+            if (b == 3) {
                 res += _base8ToChar(temp);
                 temp = 0;
                 b = 0;
             }
         }
-        if(temp != 0)
+        if (temp != 0)
             res += _base8ToChar(temp);
     }
     std::reverse(res.begin(), res.end());
-    return sign + res;
+    return _sign + res;
 }
 
 BigInt::vector_t BigInt::_fromBase2Str(const string &s)
@@ -475,7 +482,7 @@ BigInt::vector_t BigInt::_fromBase2Str(const string &s)
 BigInt::vector_t BigInt::_fromBase10Str(const string &s)
 {
     BigInt tmp;
-    for(auto i = s.begin(); i != s.end(); i++) {
+    for (auto i = s.begin(); i != s.end(); i++) {
         int what = (*i - '0');
         if (what < 0 || what > 9)
             throw std::exception("wrong base");
@@ -523,7 +530,7 @@ inline char BigInt::_base8ToChar(unsigned short t)
 }
 
 std::pair<BigInt, BigInt> divmod(const BigInt &a1, const BigInt &b1) {
-    int norm = BigInt::base / static_cast<unsigned int>(b1.v.back() + 1);
+    unsigned int norm = BigInt::base / static_cast<unsigned int>(b1.v.back() + 1);
     BigInt a = a1.abs() * norm;
     BigInt b = b1.abs() * norm;
     BigInt q, r;
@@ -567,13 +574,13 @@ istream &operator>>(istream &is, BigInt &b)
 {
     string str;
     is >> str;
-    int base = 10;
+    int _base = 10;
     if (is.flags() & std::ios::hex) {
-        base = 16;
+        _base = 16;
     }
     else if (is.flags() & std::ios::oct) {
-        base = 8;
+        _base = 8;
     }
-    b = BigInt::fromStr(str, base);
+    b = BigInt::fromStr(str, _base);
     return is;
 }
