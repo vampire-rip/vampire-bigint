@@ -1,9 +1,9 @@
 
 /*
  * Vampire Big Integer Lib -- Bright
- * You may (or may not) find a update version at:
+ * You may (or may not) find an updated version at:
  *  https://github.com/vampire-rip/vampire-bigint
- * License: MIT or whatever you like, as long as if you make some improvement on it, inform me.
+ * License: MIT or whatever you like, as long as if you make some improvement on it, let me know.
  */
 
 #ifndef BRIGHT_H
@@ -93,6 +93,7 @@ private:
     friend istream &operator>>(istream &is, BigInt &b);
 };
 
+// modify classname here:
 typedef BigInt Bright;
 
 class ErrorType {

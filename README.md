@@ -10,7 +10,7 @@ Vampire 在学习数学时写的大整数运算。
 
 ### Configuration
 
-在 `bright.h` 的 `89` 行附近的 typedef，可以把 `Bright` 改成你喜欢的别的什么名字
+在 `bright.h` 的 `95` 行附近的 typedef，可以把 `Bright` 改成你喜欢的别的什么名字
 
 ### Usage
 
@@ -19,7 +19,6 @@ Vampire 在学习数学时写的大整数运算。
 ### Examples
 
 ```cpp
-
 #include <iostream>
 #include "bright.h"
 
@@ -41,7 +40,7 @@ int main()
     // from a really long hex (or oct) number
     Bright d("C51F0E45981B5BACA24281DB78E3F31B", 16);
 
-    // from 2^30 bytes (2^120 bytes)
+    // from 4 * 2^30 bytes (2^120 bytes total)
     Bright e;
     e.unshift(Bright::mask); // mask is just 2^30-1, 111111111111111111111111111111
     e.unshift(Bright::mask);
@@ -99,6 +98,8 @@ int main()
     cout << "e >> 3 = " << (e >> 3).toStr(2) << endl;
     cout << "1 << 9 = " << hex << (Bright(1) << 9) << endl;
     cout << endl;
+
+    return 0;
 }
 ```
 

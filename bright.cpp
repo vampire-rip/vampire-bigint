@@ -1,7 +1,6 @@
 #include "bright.h"
 #include <iomanip>
 
-
 #undef BigInt
 
 BigInt::BigInt() : sign(1) {
