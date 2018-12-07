@@ -46,6 +46,7 @@ public:
     BigInt operator/(int b) const;
     BigInt operator/(const BigInt &b) const;
     BigInt operator%(const BigInt &b) const;
+    unsigned long long operator%(unsigned long long b) const;
     BigInt operator<<(const unsigned int &b) const;
     BigInt operator>>(const unsigned int &b) const;
 

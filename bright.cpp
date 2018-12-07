@@ -147,6 +147,14 @@ BigInt BigInt::operator/(const BigInt &b) const
     return divmod(*this, b).first;
 }
 
+unsigned long long BigInt::operator%(unsigned long long b) const
+{
+    unsigned long long m = 0;
+    for (size_t i = v.size() - 1; i < v.size(); --i)
+        m = (v[i] + m * base) % b;
+    return m;
+}
+
 BigInt BigInt::operator%(const BigInt &b) const
 {
     return divmod(*this, b).second;
