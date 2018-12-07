@@ -88,24 +88,7 @@ BigInt BigInt::operator-(const BigInt &b) const
 BigInt BigInt::operator*(int b) const
 {
     BigInt res = *this;
-    if (b < 0) {
-        res.sign *= -1;
-        b = -b;
-    }
-    if (b == base) {
-        res.v.insert(res.v.begin(), 0);
-        return res;
-    }
-    unsigned long long carry = 0;
-    for (size_t i = 0; i < res.vector_size() || carry; ++i) {
-        if (i == vector_size()) res.v.push_back(0);
-        unsigned long long cur
-            = static_cast<unsigned long long>(b) * res.v[i] + carry;
-        carry = cur / base;
-        res.v[i] = cur % base;
-    }
-    res.trim();
-    return res;
+    return res *= b;
 }
 
 BigInt BigInt::operator*(const BigInt &b) const
@@ -189,8 +172,25 @@ BigInt &BigInt::operator-=(const BigInt &b)
 
 BigInt &BigInt::operator*=(int b)
 {
-    *this = *this * b;
-    return *this;
+    BigInt& res = *this;
+    if (b < 0) {
+        res.sign *= -1;
+        b = -b;
+    }
+    if (b == base) {
+        res.v.insert(res.v.begin(), 0);
+        return res;
+    }
+    unsigned long long carry = 0;
+    for (size_t i = 0; i < res.vector_size() || carry; ++i) {
+        if (i == vector_size()) res.v.push_back(0);
+        unsigned long long cur
+            = static_cast<unsigned long long>(b) * res.v[i] + carry;
+        carry = cur / base;
+        res.v[i] = cur % base;
+    }
+    res.trim();
+    return res;
 }
 
 BigInt &BigInt::operator*=(const BigInt &b)
