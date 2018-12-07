@@ -112,7 +112,7 @@ BigInt BigInt::operator*(const BigInt &b) const
 {
     // " << 1 " is of the same complexity as " << i "
     BigInt res(0);
-    for (size_t i = 0; i < b.vector_size(); i++) {
+    for (unsigned int i = 0; i < b.vector_size(); i++) {
         res += [&] {
             BigInt t = *this * static_cast<int>(b.v[i]);
             t.sign = 1;
@@ -132,7 +132,7 @@ BigInt BigInt::operator/(int _b) const
         _b = -_b;
     }
     auto b = static_cast<unsigned int>(_b);
-    long long rem = 0;
+    unsigned long long rem = 0;
     for (size_t i = v.size() - 1; i < v.size(); --i) {
         unsigned long long cur = v[i] + rem * base;
         res.v[i] = static_cast<unsigned int>(cur / b);
@@ -465,7 +465,7 @@ BigInt::vector_t BigInt::_fromBase2Str(const string &s)
         case '0': break;
         case '1': temp += 1 << b; break;
         default:
-            throw std::exception("wrong base");
+            throw std::invalid_argument("wrong base");
         }
         ++b;
         if (b == base2) {
@@ -485,7 +485,7 @@ BigInt::vector_t BigInt::_fromBase10Str(const string &s)
     for (auto i = s.begin(); i != s.end(); i++) {
         int what = (*i - '0');
         if (what < 0 || what > 9)
-            throw std::exception("wrong base");
+            throw std::invalid_argument("wrong base");
         tmp = tmp * 10 + what;
     }
     return tmp.v;
@@ -511,7 +511,7 @@ inline char BigInt::_base16ToChar(unsigned short t)
     case 14: return 'E';
     case 15: return 'F';
     }
-    throw std::exception("wrong base");
+    throw std::invalid_argument("wrong base");
 }
 
 inline char BigInt::_base8ToChar(unsigned short t)
@@ -526,7 +526,7 @@ inline char BigInt::_base8ToChar(unsigned short t)
     case 6: return '6';
     case 7: return '7';
     }
-    throw std::exception("wrong base");
+    throw std::invalid_argument("wrong base");
 }
 
 std::pair<BigInt, BigInt> divmod(const BigInt &a1, const BigInt &b1) {

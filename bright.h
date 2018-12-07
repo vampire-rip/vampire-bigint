@@ -27,8 +27,9 @@ class BigInt {
 
 public:
     const static unsigned int base = 0x40000000;
-    const static unsigned int mask = 0x3FFFFFFF;
+    const static unsigned int mask = base - 1;
     const static unsigned int base2 = 30;
+
     BigInt();
     BigInt(const long long& v);
     BigInt(const vector_t& v);
